@@ -1,6 +1,8 @@
 # YouTube Minimal
 
-A Manifest V3 browser extension that makes YouTube cleaner, quieter, and easier to use intentionally.
+Ever hate those random MFs in your feed like 
+who is u?
+Youtube minimal is browser extension that makes YouTube cleaner, quieter, and easier to use intentionally.
 
 ## File structure
 
@@ -46,3 +48,4 @@ Most Chromium browsers have an extensions page similar to Chrome:
 - Whitelist mode relaxes the general filters on matching channel pages
 - Blacklist mode hides cards from blocked channels and hides current watch or channel pages when they match
 # lolblocker
+let's watch youtube and doomscroll with intention :3

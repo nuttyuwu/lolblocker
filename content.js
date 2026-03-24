@@ -70,6 +70,10 @@
     sidebar: [
       "ytd-guide-renderer",
       "ytd-mini-guide-renderer",
+      "ytd-guide-section-renderer",
+      "ytd-guide-renderer ytd-guide-section-renderer",
+      "ytd-guide-section-renderer[mini-guide-visible]",
+      "ytd-guide-section-renderer.style-scope.ytd-guide-renderer",
       "tp-yt-app-drawer",
     ],
     searchSuggestions: [
@@ -178,6 +182,7 @@
     lastUrl: location.href,
     lastBannerMessage: "",
     preparedSearchUrl: null,
+    searchDeferredTimers: [],
   };
 
   function isEnabled() {
@@ -306,7 +311,22 @@
       `[${HIDDEN_ATTRIBUTE}="true"] {\n  display: none !important;\n}\n`,
     ];
 
-    if (!isEnabled() || bypassGeneralFilters || searchPageMode) {
+    if (!isEnabled() || bypassGeneralFilters) {
+      return rules.join("\n");
+    }
+
+    if (searchPageMode) {
+      if (state.settings.hideSubscriptionsSection) {
+        rules.push(createCssRule(SELECTORS.subscriptionsSection));
+      }
+
+      if (state.settings.hideSidebarEntirely) {
+        rules.push(createCssRule(SELECTORS.sidebar));
+        rules.push(
+          "ytd-page-manager[guide-persistent-and-visible] #content.ytd-app {\n  margin-left: 0 !important;\n}\n"
+        );
+      }
+
       return rules.join("\n");
     }
 
@@ -432,6 +452,80 @@
   function getSectionTitleText(element) {
     const titleEl = element.querySelector(SECTION_TITLE_SELECTORS);
     return titleEl ? getTextContent(titleEl) : "";
+  }
+
+  const GUIDE_SECTION_TITLE_SELECTORS = [
+    "#guide-section-title",
+    "#header-entry",
+    "#header .title",
+    "#header yt-formatted-string",
+    "h3",
+    "yt-formatted-string",
+  ].join(",");
+
+  function isSubscriptionsGuideSection(section) {
+    if (!section) {
+      return false;
+    }
+
+    const headerText = getTextContent(
+      section.querySelector(GUIDE_SECTION_TITLE_SELECTORS)
+    );
+    const hasSubscriptionsLink = Boolean(
+      section.querySelector(
+        "a[href='/feed/subscriptions'], a[href^='/feed/subscriptions?'], a[title='Subscriptions']"
+      )
+    );
+    const subscriptionChannelLinks = section.querySelectorAll(
+      "#items a[href^='/@'], #items a[href^='/channel/'], #items a[href^='/c/'], #items a[href^='/user/']"
+    ).length;
+
+    return (
+      hasSubscriptionsLink ||
+      /\bsubscriptions\b/i.test(headerText) ||
+      subscriptionChannelLinks >= 3
+    );
+  }
+
+  function hideSubscriptionsGuideSections() {
+    if (!state.settings.hideSubscriptionsSection) {
+      return;
+    }
+
+    document.querySelectorAll("ytd-guide-section-renderer").forEach((section) => {
+      if (!isSubscriptionsGuideSection(section)) {
+        return;
+      }
+
+      markHidden(section, "subscriptions-guide-section");
+      section
+        .querySelectorAll(":scope > #items, #items.style-scope.ytd-guide-section-renderer")
+        .forEach((items) => {
+          markHidden(items, "subscriptions-guide-items");
+        });
+    });
+  }
+
+  function clearSearchDeferredTimers() {
+    state.searchDeferredTimers.forEach((timer) => {
+      window.clearTimeout(timer);
+    });
+    state.searchDeferredTimers = [];
+  }
+
+  function scheduleSearchPageDeferredHides() {
+    clearSearchDeferredTimers();
+
+    if (!state.settings.hideSubscriptionsSection) {
+      return;
+    }
+
+    [0, 200, 600].forEach((delay) => {
+      const timer = window.setTimeout(() => {
+        hideSubscriptionsGuideSections();
+      }, delay);
+      state.searchDeferredTimers.push(timer);
+    });
   }
 
   function hideTextBasedContent(bypassGeneralFilters) {
@@ -654,6 +748,7 @@
 
       if (state.settings.hideSubscriptionsSection) {
         hideAll(SELECTORS.subscriptionsSection, "subscriptions-section");
+        hideSubscriptionsGuideSections();
       }
 
       if (state.settings.hideHomeFeedCompletely && isHomePage()) {
@@ -673,6 +768,8 @@
     state.lastUrl = currentUrl;
 
     if (isSearchPage()) {
+      const bypassGeneralFilters = shouldBypassGeneralFilters();
+      const searchPageCss = buildStyleSheet(bypassGeneralFilters, true);
       const shouldSyncSearchPage =
         reason === "init" ||
         reason === "settings" ||
@@ -681,14 +778,16 @@
 
       if (shouldSyncSearchPage) {
         clearManagedHiding();
-        ensureStyleElement("");
+        ensureStyleElement(searchPageCss);
         renderBanner("");
         state.preparedSearchUrl = currentUrl;
+        scheduleSearchPageDeferredHides();
       }
 
       return;
     }
 
+    clearSearchDeferredTimers();
     state.preparedSearchUrl = null;
     const resetManagedState =
       reason === "init" ||

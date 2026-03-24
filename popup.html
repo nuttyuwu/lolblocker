@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YouTube Minimal</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="hero glass">
+        <div class="hero-copy">
+          <div class="logo-wrap">
+            <div class="logo">:3</div>
+            <div>
+              <p class="eyebrow">larping Lord</p>
+              <h1>YouTube Minimal</h1>
+            </div>
+          </div>
+          <p class="subtitle">I HATE RANDOM MFS IN MY FEED.</p>
+          <p class="helper">LOCK IN.</p>
+        </div>
+        <label class="switch master" title="Master enable">
+          <input id="enabled" type="checkbox" />
+          <span class="slider"></span>
+        </label>
+      </header>
+
+      <section class="group glass">
+        <div class="section-title">Core Filters</div>
+        <label class="toggle">
+          <span>Block ads and upsells</span>
+          <input id="hideAdsAndUpsells" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Subscription-only homepage</span>
+          <input id="subscriptionsOnlyHomepage" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide recommendations</span>
+          <input id="hideRecommendations" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide donations and fundraisers</span>
+          <input id="hideDonations" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide subscriptions section</span>
+          <input id="hideSubscriptionsSection" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide homepage feed completely</span>
+          <input id="hideHomeFeedCompletely" type="checkbox" />
+        </label>
+      </section>
+
+      <section class="group glass">
+        <div class="section-title">Focus Extras</div>
+        <label class="toggle">
+          <span>Hide comments</span>
+          <input id="hideComments" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide live chat</span>
+          <input id="hideLiveChat" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide notifications bell</span>
+          <input id="hideNotificationsBell" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide sidebar entirely</span>
+          <input id="hideSidebarEntirely" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide search suggestions</span>
+          <input id="hideSearchSuggestions" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide autoplay toggle</span>
+          <input id="hideAutoplayToggle" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide miniplayer button</span>
+          <input id="hideMiniplayerButton" type="checkbox" />
+        </label>
+        <label class="toggle">
+          <span>Hide channel avatars</span>
+          <input id="hideChannelAvatars" type="checkbox" />
+        </label>
+      </section>
+
+      <section class="group glass">
+        <div class="section-title">Channel Rules</div>
+        <label class="toggle">
+          <span>Whitelist mode</span>
+          <input id="whitelistMode" type="checkbox" />
+        </label>
+        <label class="stacked" for="whitelist">
+          <span>Whitelisted channels</span>
+          <textarea
+            id="whitelist"
+            rows="4"
+            placeholder="@channel-handle or channel name, one per line"
+          ></textarea>
+        </label>
+        <label class="toggle">
+          <span>Blacklist mode</span>
+          <input id="blacklistMode" type="checkbox" />
+        </label>
+        <label class="stacked" for="blacklist">
+          <span>Blacklisted channels</span>
+          <textarea
+            id="blacklist"
+            rows="4"
+            placeholder="@channel-handle or channel name, one per line"
+          ></textarea>
+        </label>
+        <p class="helper">If a channel is in both lists, blacklist wins.</p>
+      </section>
+
+      <footer class="footer">
+        <button id="restoreDefaults" type="button">Restore defaults</button>
+      </footer>
+    </main>
+
+    <script src="settings.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

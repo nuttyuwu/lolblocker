@@ -1,0 +1,28 @@
+# Build artifacts
+dist/
+build/
+*.zip
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.log
+*.cache
+
+# Node modules (if any dependencies added later)
+node_modules/
+
+# Browser extension specific
+*.crx
+*.xpi
